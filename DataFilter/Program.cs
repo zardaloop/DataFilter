@@ -19,13 +19,10 @@ namespace DataFilter
             setMinAndMax(dt);
             Dictionary<string, double> resultDic = GetResult(dt);
             WriteOutTheFile(resultDic);
-
-
         }
 
         private static void WriteOutTheFile(Dictionary<string, double> dic)
         {
-
             using (System.IO.StreamWriter file =
             new System.IO.StreamWriter(@"C:\temp\Result.txt", false))
             {
@@ -70,7 +67,6 @@ namespace DataFilter
                 minDic.Add(colName, list.Min());
                 maxDic.Add(colName, list.Max());
             }
-
         }
 
         private static Dictionary<string, double> GetResult(DataTable dt)
@@ -92,19 +88,16 @@ namespace DataFilter
 
                     var rangeDiff = (maxDic[colName] - (minDic[colName]) / percentage);
                     ColumnLowHigh.Add("L" + c, value <= minDic[colName] + (rangeDiff / percentage) ? 1 : 0);
-                    ColumnLowHigh.Add("H" + c, value >= maxDic[colName] - (rangeDiff / percentage) ? 1 : 0);
-                    
+                    ColumnLowHigh.Add("H" + c, value >= maxDic[colName] - (rangeDiff / percentage) ? 1 : 0);                    
                 }                
 
                 foreach (string possibility in possibilities)
                 {
-
                     char[] token = possibility.ToCharArray();
 
                     int ShouldConsider = 1;
                     for (var i = 0; i < token.Length; i++ )
                     {
-
                         ShouldConsider = ShouldConsider * (token[i] == 'L' ? ColumnLowHigh["L" + i] : ColumnLowHigh["H" + i]);
                     }
 
@@ -120,13 +113,11 @@ namespace DataFilter
             foreach (string possibility in possibilities)
             {
                 char[] token = possibility.ToCharArray();
-
                 var Ls = token.Count(x => x == 'L');
-
                 double max = 0;
                 var list = temp.Where(p => p.Key.Contains(possibility)).Select(x => x.Value).DefaultIfEmpty(0);
-                switch(Ls){
-
+                switch(Ls)
+                {
                     case 0:
                         max = list.Max();
                         break;
@@ -151,5 +142,3 @@ namespace DataFilter
         }
     }
 }
-
-

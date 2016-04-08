@@ -9,10 +9,10 @@ namespace DataFilter
 {
     class Program
     {
-        private static string path = @"C:\temp\DATASET2.csv";
+        private static string path = @"C:\temp\pump-data.csv";
         private static Dictionary<string, double> maxDic = new Dictionary<string, double>();
         private static Dictionary<string, double> minDic = new Dictionary<string, double>();
-        private static double percentage = 3;
+        private static double percentage = 0.9;
         static void Main(string[] args)
         {
             DataTable dt = ConvertToDataTable(path);
@@ -39,12 +39,13 @@ namespace DataFilter
                 file.WriteLine("-----LOW/HIGH Values -----");
                 foreach (string key in dic.Keys)
                 {
-                    file.WriteLine( key + "--->" + dic[key]);
+                    file.WriteLine(key + "--->" + dic[key]);
                 }
             }
         }
 
-        public static System.Data.DataTable ConvertToDataTable(string path) {
+        public static System.Data.DataTable ConvertToDataTable(string path)
+        {
             DataTable dt;
             using (GenericParserAdapter parser = new GenericParserAdapter())
             {
@@ -79,7 +80,7 @@ namespace DataFilter
 
             for (int r = 0; r < dt.Rows.Count; r++)
             {
-                double performance = Convert.ToDouble(dt.Rows[r][dt.Columns.Count - 2]);                
+                double performance = Convert.ToDouble(dt.Rows[r][dt.Columns.Count - 5]);
 
                 for (int c = 0; c <= dt.Columns.Count - 2; c++)
                 {
@@ -88,15 +89,15 @@ namespace DataFilter
 
                     var rangeDiff = (maxDic[colName] - (minDic[colName]) / percentage);
                     ColumnLowHigh.Add("L" + c, value <= minDic[colName] + (rangeDiff / percentage) ? 1 : 0);
-                    ColumnLowHigh.Add("H" + c, value >= maxDic[colName] - (rangeDiff / percentage) ? 1 : 0);                    
-                }                
+                    ColumnLowHigh.Add("H" + c, value >= maxDic[colName] - (rangeDiff / percentage) ? 1 : 0);
+                }
 
                 foreach (string possibility in possibilities)
                 {
                     char[] token = possibility.ToCharArray();
 
                     int ShouldConsider = 1;
-                    for (var i = 0; i < token.Length; i++ )
+                    for (var i = 0; i < token.Length; i++)
                     {
                         ShouldConsider = ShouldConsider * (token[i] == 'L' ? ColumnLowHigh["L" + i] : ColumnLowHigh["H" + i]);
                     }
@@ -116,7 +117,7 @@ namespace DataFilter
                 var Ls = token.Count(x => x == 'L');
                 double max = 0;
                 var list = temp.Where(p => p.Key.Contains(possibility)).Select(x => x.Value).DefaultIfEmpty(0);
-                switch(Ls)
+                switch (Ls)
                 {
                     case 0:
                         max = list.Max();
@@ -134,8 +135,8 @@ namespace DataFilter
                         max = list.Min();
                         break;
                 }
-                
-                resultDic.Add(possibility, max);            
+
+                resultDic.Add(possibility, max);
             }
 
             return resultDic;
